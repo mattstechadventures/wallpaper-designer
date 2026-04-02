@@ -33,6 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# data
+/data/wallpaper.db
+/data/wallpaper.db-shm
+/data/wallpaper.db-wal
+/data/rendered/
+
 # vercel
 .vercel
 
