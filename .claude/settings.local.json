@@ -4,7 +4,13 @@
       "Bash(sw_vers)",
       "Bash(system_profiler SPDisplaysDataType)",
       "Bash(mkdir -p /Users/matthewday/dev/utilities/wallpaper/.claude/skills)",
-      "Bash(cp -r /Users/matthewday/dev/mms-v3/.claude/skills/dev-guardrails /Users/matthewday/dev/utilities/wallpaper/.claude/skills/)"
+      "Bash(cp -r /Users/matthewday/dev/mms-v3/.claude/skills/dev-guardrails /Users/matthewday/dev/utilities/wallpaper/.claude/skills/)",
+      "Bash(unzip -o /tmp/inter.zip -d /tmp/inter)",
+      "Bash(cp /tmp/inter/Inter.ttc /Users/matthewday/dev/utilities/wallpaper/public/fonts/)",
+      "Read(//tmp/**)",
+      "Bash(node:*)",
+      "Bash(python3 -m json.tool)",
+      "Bash(file /Users/matthewday/dev/utilities/wallpaper/data/rendered/wallpaper-*.png)"
     ]
   }
 }
