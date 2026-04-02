@@ -5,9 +5,18 @@ import type { WallpaperTemplate, Widget } from "@/lib/schema/template";
 import { createDefaultTemplate } from "@/lib/schema/defaults";
 import { v4 as uuid } from "uuid";
 
+export type CanvasTool = "select" | "marquee";
+
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 3;
+const ZOOM_STEP = 0.15;
+
 interface DesignerState {
   template: WallpaperTemplate;
   selectedWidgetId: string | null;
+  selectedWidgetIds: string[];
+  activeTool: CanvasTool;
+  zoom: number;
   isDirty: boolean;
   isRendering: boolean;
   lastRenderUrl: string | null;
@@ -15,6 +24,14 @@ interface DesignerState {
   // Actions
   setTemplate: (template: WallpaperTemplate) => void;
   selectWidget: (id: string | null) => void;
+  toggleWidgetSelection: (id: string) => void;
+  selectWidgets: (ids: string[]) => void;
+  clearSelection: () => void;
+  setActiveTool: (tool: CanvasTool) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  zoomTo: (level: number) => void;
+  zoomToFit: () => void;
   updateWidget: (id: string, updates: Partial<Widget>) => void;
   addWidget: (type: string, position: { col: number; row: number }, span: { cols: number; rows: number }, config: Record<string, unknown>, style: Widget["style"]) => void;
   removeWidget: (id: string) => void;
@@ -31,13 +48,53 @@ interface DesignerState {
 export const useDesignerStore = create<DesignerState>((set, get) => ({
   template: createDefaultTemplate(),
   selectedWidgetId: null,
+  selectedWidgetIds: [],
+  activeTool: "select",
+  zoom: 1,
   isDirty: false,
   isRendering: false,
   lastRenderUrl: null,
 
   setTemplate: (template) => set({ template, isDirty: false }),
 
-  selectWidget: (id) => set({ selectedWidgetId: id }),
+  selectWidget: (id) =>
+    set({
+      selectedWidgetId: id,
+      selectedWidgetIds: id ? [id] : [],
+    }),
+
+  toggleWidgetSelection: (id) =>
+    set((state) => {
+      const ids = state.selectedWidgetIds.includes(id)
+        ? state.selectedWidgetIds.filter((i) => i !== id)
+        : [...state.selectedWidgetIds, id];
+      return {
+        selectedWidgetIds: ids,
+        selectedWidgetId: ids.length === 1 ? ids[0] : null,
+      };
+    }),
+
+  selectWidgets: (ids) =>
+    set({
+      selectedWidgetIds: ids,
+      selectedWidgetId: ids.length === 1 ? ids[0] : null,
+    }),
+
+  clearSelection: () =>
+    set({ selectedWidgetId: null, selectedWidgetIds: [] }),
+
+  setActiveTool: (tool) => set({ activeTool: tool }),
+
+  zoomIn: () =>
+    set((state) => ({ zoom: Math.min(MAX_ZOOM, state.zoom + ZOOM_STEP) })),
+
+  zoomOut: () =>
+    set((state) => ({ zoom: Math.max(MIN_ZOOM, state.zoom - ZOOM_STEP) })),
+
+  zoomTo: (level) =>
+    set({ zoom: Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, level)) }),
+
+  zoomToFit: () => set({ zoom: 1 }),
 
   updateWidget: (id, updates) =>
     set((state) => ({
