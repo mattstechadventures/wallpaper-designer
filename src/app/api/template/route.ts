@@ -65,6 +65,11 @@ export async function POST(request: NextRequest) {
       .where(eq(templates.id, id))
       .run();
   } else {
+    // Deactivate all other templates before inserting a new active one
+    db.update(templates)
+      .set({ isActive: false })
+      .where(eq(templates.isActive, true))
+      .run();
     db.insert(templates)
       .values({
         id,
