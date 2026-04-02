@@ -18,10 +18,12 @@ interface DesignerState {
   activeTool: CanvasTool;
   zoom: number;
   isDirty: boolean;
+  inspectorLocked: boolean;
   isRendering: boolean;
   lastRenderUrl: string | null;
 
   // Actions
+  setInspectorLocked: (locked: boolean) => void;
   setTemplate: (template: WallpaperTemplate) => void;
   selectWidget: (id: string | null) => void;
   toggleWidgetSelection: (id: string) => void;
@@ -52,8 +54,11 @@ export const useDesignerStore = create<DesignerState>((set, get) => ({
   activeTool: "select",
   zoom: 1,
   isDirty: false,
+  inspectorLocked: false,
   isRendering: false,
   lastRenderUrl: null,
+
+  setInspectorLocked: (locked) => set({ inspectorLocked: locked }),
 
   setTemplate: (template) => set({ template, isDirty: false }),
 

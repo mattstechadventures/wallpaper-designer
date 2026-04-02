@@ -11,6 +11,7 @@ import { FontLoader } from "./components/font-loader";
 
 export default function DesignerPage() {
   const selectedWidgetId = useDesignerStore((s) => s.selectedWidgetId);
+  const inspectorLocked = useDesignerStore((s) => s.inspectorLocked);
   const setTemplate = useDesignerStore((s) => s.setTemplate);
   const [loaded, setLoaded] = useState(false);
 
@@ -39,13 +40,13 @@ export default function DesignerPage() {
     <div className="h-screen flex flex-col bg-background text-foreground">
       <FontLoader />
       <Toolbar />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         <WidgetPalette />
         <div className="flex-1 relative bg-muted/30">
           <Canvas />
           <CanvasToolkit />
         </div>
-        {selectedWidgetId && <WidgetInspector />}
+        <WidgetInspector show={!!(selectedWidgetId || inspectorLocked)} />
       </div>
     </div>
   );

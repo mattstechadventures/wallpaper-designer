@@ -19,168 +19,193 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function WidgetInspector() {
-  const { template, selectedWidgetId, updateWidget, removeWidget, selectWidget } =
+export function WidgetInspector({ show }: { show: boolean }) {
+  const { template, selectedWidgetId, inspectorLocked, updateWidget, removeWidget, selectWidget, setInspectorLocked } =
     useDesignerStore();
 
   const widget = template.widgets.find((w) => w.id === selectedWidgetId);
-  if (!widget) return null;
-
-  const widgetDef = getWidget(widget.type);
-  if (!widgetDef) return null;
-
-  const ConfigComponent = widgetDef.configComponent;
+  const widgetDef = widget ? getWidget(widget.type) : null;
+  const ConfigComponent = widgetDef?.configComponent;
 
   return (
-    <div className="w-72 border-l border-border bg-background shrink-0 flex flex-col">
+    <div
+      className={`absolute top-0 right-0 h-full w-72 border-l border-border bg-background flex flex-col z-30 transition-transform duration-200 ease-in-out ${
+        show ? "translate-x-0" : "translate-x-full"
+      }`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-        <h2 className="text-sm font-semibold">{widgetDef.name}</h2>
-        <Button variant="ghost" size="xs" onClick={() => selectWidget(null)}>
-          Done
-        </Button>
+        <h2 className="text-sm font-semibold">{widgetDef?.name ?? "Inspector"}</h2>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => setInspectorLocked(!inspectorLocked)}
+            title={inspectorLocked ? "Unlock panel" : "Lock panel open"}
+            className={inspectorLocked ? "text-foreground" : "text-muted-foreground"}
+          >
+            {inspectorLocked ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            )}
+          </Button>
+          {selectedWidgetId && (
+            <Button variant="ghost" size="xs" onClick={() => selectWidget(null)}>
+              Done
+            </Button>
+          )}
+        </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-5">
-          {/* Position & Size */}
-          <Section title="Position">
-            <div className="grid grid-cols-2 gap-3">
-              <NumberField
-                label="Column"
-                value={widget.position.col}
-                min={1}
-                max={template.grid.columns}
-                onChange={(col) =>
-                  updateWidget(widget.id, {
-                    position: { ...widget.position, col },
-                  })
-                }
-              />
-              <NumberField
-                label="Row"
-                value={widget.position.row}
-                min={1}
-                max={template.grid.rows}
-                onChange={(row) =>
-                  updateWidget(widget.id, {
-                    position: { ...widget.position, row },
-                  })
-                }
-              />
-              <NumberField
-                label="Width"
-                value={widget.span.cols}
-                min={widgetDef.minSpan.cols}
-                max={template.grid.columns - widget.position.col + 1}
-                onChange={(cols) =>
-                  updateWidget(widget.id, {
-                    span: { ...widget.span, cols },
-                  })
-                }
-              />
-              <NumberField
-                label="Height"
-                value={widget.span.rows}
-                min={widgetDef.minSpan.rows}
-                max={template.grid.rows - widget.position.row + 1}
-                onChange={(rows) =>
-                  updateWidget(widget.id, {
-                    span: { ...widget.span, rows },
-                  })
-                }
-              />
-            </div>
-          </Section>
+      {widget && widgetDef && ConfigComponent ? (
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-5">
+            {/* Position & Size */}
+            <Section title="Position">
+              <div className="grid grid-cols-2 gap-3">
+                <NumberField
+                  label="Column"
+                  value={widget.position.col}
+                  min={1}
+                  max={template.grid.columns}
+                  onChange={(col) =>
+                    updateWidget(widget.id, {
+                      position: { ...widget.position, col },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Row"
+                  value={widget.position.row}
+                  min={1}
+                  max={template.grid.rows}
+                  onChange={(row) =>
+                    updateWidget(widget.id, {
+                      position: { ...widget.position, row },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Width"
+                  value={widget.span.cols}
+                  min={widgetDef.minSpan.cols}
+                  max={template.grid.columns - widget.position.col + 1}
+                  onChange={(cols) =>
+                    updateWidget(widget.id, {
+                      span: { ...widget.span, cols },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Height"
+                  value={widget.span.rows}
+                  min={widgetDef.minSpan.rows}
+                  max={template.grid.rows - widget.position.row + 1}
+                  onChange={(rows) =>
+                    updateWidget(widget.id, {
+                      span: { ...widget.span, rows },
+                    })
+                  }
+                />
+              </div>
+            </Section>
 
-          {/* Widget-specific config */}
-          <Section title="Configuration">
-            <ConfigComponent
-              config={widget.config as never}
-              onChange={(config: Record<string, unknown>) =>
-                updateWidget(widget.id, { config })
-              }
-            />
-          </Section>
+            {/* Widget-specific config */}
+            <Section title="Configuration">
+              <ConfigComponent
+                config={widget.config as never}
+                onChange={(config: Record<string, unknown>) =>
+                  updateWidget(widget.id, { config })
+                }
+              />
+            </Section>
 
-          {/* Style */}
-          <Section title="Style">
-            <div className="space-y-3">
-              <ColorField
-                label="Text Color"
-                value={widget.style.color || "#ffffff"}
-                onChange={(color) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, color },
-                  })
-                }
-              />
-              <ColorField
-                label="Background"
-                value={widget.style.background || "transparent"}
-                onChange={(background) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, background },
-                  })
-                }
-              />
-              <FontField
-                label="Font"
-                value={widget.style.fontFamily || "Inter"}
-                onChange={(fontFamily) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, fontFamily },
-                  })
-                }
-              />
-              <NumberField
-                label="Font Size"
-                value={widget.style.fontSize || 14}
-                min={8}
-                max={200}
-                onChange={(fontSize) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, fontSize },
-                  })
-                }
-              />
-              <NumberField
-                label="Border Radius"
-                value={widget.style.borderRadius || 0}
-                min={0}
-                max={50}
-                onChange={(borderRadius) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, borderRadius },
-                  })
-                }
-              />
-              <NumberField
-                label="Opacity"
-                value={Math.round((widget.style.opacity ?? 1) * 100)}
-                min={0}
-                max={100}
-                onChange={(v) =>
-                  updateWidget(widget.id, {
-                    style: { ...widget.style, opacity: v / 100 },
-                  })
-                }
-              />
-            </div>
-          </Section>
+            {/* Style */}
+            <Section title="Style">
+              <div className="space-y-3">
+                <ColorField
+                  label="Text Color"
+                  value={widget.style.color || "#ffffff"}
+                  onChange={(color) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, color },
+                    })
+                  }
+                />
+                <ColorField
+                  label="Background"
+                  value={widget.style.background || "transparent"}
+                  onChange={(background) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, background },
+                    })
+                  }
+                />
+                <FontField
+                  label="Font"
+                  value={widget.style.fontFamily || "Inter"}
+                  onChange={(fontFamily) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, fontFamily },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Font Size"
+                  value={widget.style.fontSize || 14}
+                  min={8}
+                  max={200}
+                  onChange={(fontSize) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, fontSize },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Border Radius"
+                  value={widget.style.borderRadius || 0}
+                  min={0}
+                  max={50}
+                  onChange={(borderRadius) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, borderRadius },
+                    })
+                  }
+                />
+                <NumberField
+                  label="Opacity"
+                  value={Math.round((widget.style.opacity ?? 1) * 100)}
+                  min={0}
+                  max={100}
+                  onChange={(v) =>
+                    updateWidget(widget.id, {
+                      style: { ...widget.style, opacity: v / 100 },
+                    })
+                  }
+                />
+              </div>
+            </Section>
 
-          {/* Delete */}
-          <Separator />
-          <Button
-            variant="destructive"
-            className="w-full"
-            size="sm"
-            onClick={() => removeWidget(widget.id)}
-          >
-            Remove Widget
-          </Button>
+            {/* Delete */}
+            <Separator />
+            <Button
+              variant="destructive"
+              className="w-full"
+              size="sm"
+              onClick={() => removeWidget(widget.id)}
+            >
+              Remove Widget
+            </Button>
+          </div>
+        </ScrollArea>
+      ) : (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Select a widget to edit its properties
+          </p>
         </div>
-      </ScrollArea>
+      )}
     </div>
   );
 }
