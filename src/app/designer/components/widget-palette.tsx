@@ -3,6 +3,7 @@
 import { getAllWidgets } from "@/lib/widgets/registry";
 import { useDesignerStore } from "@/lib/store/designer-store";
 import { widgetFitsGrid, widgetsOverlap } from "@/lib/grid/calculator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ICON_MAP: Record<string, string> = {
   Clock: "\u{1F551}",
@@ -18,7 +19,6 @@ export function WidgetPalette() {
   const widgets = getAllWidgets();
 
   const handleAddWidget = (widgetDef: ReturnType<typeof getAllWidgets>[number]) => {
-    // Find first available position on the grid
     const position = findOpenPosition(
       template.grid,
       template.widgets,
@@ -40,25 +40,31 @@ export function WidgetPalette() {
   };
 
   return (
-    <div className="w-56 border-r border-gray-800 bg-gray-950 p-4 shrink-0 overflow-y-auto">
-      <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-        Widgets
-      </h2>
-      <div className="space-y-2">
-        {widgets.map((w) => (
-          <button
-            key={w.type}
-            onClick={() => handleAddWidget(w)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 transition-colors text-left"
-          >
-            <span className="text-lg">{ICON_MAP[w.icon] || "\u{1F4E6}"}</span>
-            <div>
-              <div className="text-sm font-medium">{w.name}</div>
-              <div className="text-xs text-gray-500">{w.description}</div>
-            </div>
-          </button>
-        ))}
+    <div className="w-56 border-r border-border bg-background shrink-0 flex flex-col">
+      <div className="px-4 pt-4 pb-2">
+        <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Widgets
+        </h2>
       </div>
+      <ScrollArea className="flex-1 px-3 pb-3">
+        <div className="space-y-1.5">
+          {widgets.map((w) => (
+            <button
+              key={w.type}
+              onClick={() => handleAddWidget(w)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md border border-transparent hover:bg-accent hover:border-border transition-colors text-left group"
+            >
+              <span className="text-lg opacity-70 group-hover:opacity-100 transition-opacity">
+                {ICON_MAP[w.icon] || "\u{1F4E6}"}
+              </span>
+              <div>
+                <div className="text-sm font-medium">{w.name}</div>
+                <div className="text-xs text-muted-foreground">{w.description}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

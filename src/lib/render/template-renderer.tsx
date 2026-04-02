@@ -22,6 +22,7 @@ export const TemplateRenderer: React.FC<TemplateRendererProps> = ({
         display: "flex",
         position: "relative",
         overflow: "hidden",
+        fontFamily: "Inter",
         ...backgroundToStyle(canvas.background),
       }}
     >

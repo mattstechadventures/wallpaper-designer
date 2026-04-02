@@ -21,7 +21,7 @@ export const ClockRender: React.FC<WidgetRenderProps<ClockConfig>> = ({
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        fontFamily: style.fontFamily || "Inter",
+        fontFamily: style.fontFamily || "inherit",
         color: style.color || "#ffffff",
         background: style.background || "transparent",
         borderRadius: style.borderRadius || 0,

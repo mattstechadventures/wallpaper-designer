@@ -1,48 +1,55 @@
 "use client";
 
 import { useDesignerStore } from "@/lib/store/designer-store";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export function Toolbar() {
   const { isDirty, isRendering, save, render, lastRenderUrl, template } =
     useDesignerStore();
 
   return (
-    <div className="h-14 border-b border-gray-800 flex items-center justify-between px-6 bg-gray-950 shrink-0">
-      <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold">Wallpaper Designer</h1>
-        <span className="text-sm text-gray-500">{template.name}</span>
+    <header className="h-14 border-b border-border flex items-center justify-between px-4 bg-background shrink-0">
+      <div className="flex items-center gap-3">
+        <h1 className="text-sm font-semibold tracking-tight">
+          Wallpaper Designer
+        </h1>
+        <Separator orientation="vertical" className="h-4" />
+        <span className="text-sm text-muted-foreground">{template.name}</span>
         {isDirty && (
-          <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded">
+          <Badge variant="outline" className="text-amber-400 border-amber-400/30 bg-amber-400/10">
             Unsaved
-          </span>
+          </Badge>
         )}
       </div>
-      <div className="flex items-center gap-3">
-        <button
+      <div className="flex items-center gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={save}
           disabled={!isDirty}
-          className="px-4 py-1.5 text-sm rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           Save
-        </button>
-        <button
+        </Button>
+        <Button
+          size="sm"
           onClick={render}
           disabled={isRendering}
-          className="px-4 py-1.5 text-sm rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 transition-colors"
         >
           {isRendering ? "Rendering..." : "Render Wallpaper"}
-        </button>
+        </Button>
         {lastRenderUrl && (
           <a
             href={lastRenderUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-indigo-400 hover:text-indigo-300"
+            className="text-sm text-primary hover:underline underline-offset-4"
           >
             View Latest
           </a>
         )}
       </div>
-    </div>
+    </header>
   );
 }

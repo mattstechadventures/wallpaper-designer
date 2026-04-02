@@ -15,7 +15,7 @@ export const TextRender: React.FC<WidgetRenderProps<TextConfig>> = ({
         height: size.height,
         display: "flex",
         flexDirection: "column",
-        fontFamily: style.fontFamily || "Inter",
+        fontFamily: style.fontFamily || "inherit",
         color: style.color || "#ffffff",
         background: style.background || "transparent",
         borderRadius: style.borderRadius || 0,
