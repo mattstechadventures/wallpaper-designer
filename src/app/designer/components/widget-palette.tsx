@@ -12,6 +12,17 @@ const ICON_MAP: Record<string, string> = {
   ListTodo: "\u{2611}",
   Calendar: "\u{1F4C5}",
   Cloud: "\u{2601}",
+  Timer: "\u{23F3}",
+  Grid: "\u{1F4CA}",
+  Hourglass: "\u{231B}",
+  Quote: "\u{1F4AC}",
+  StickyNote: "\u{1F4CC}",
+  Globe: "\u{1F310}",
+  Sun: "\u{2600}",
+  Moon: "\u{1F319}",
+  BarChart: "\u{1F4C8}",
+  Palette: "\u{1F3A8}",
+  Terminal: "\u{1F4BB}",
 };
 
 export function WidgetPalette() {
