@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useDesignerStore } from "@/lib/store/designer-store";
 import { getWidget } from "@/lib/widgets/registry";
 import { AVAILABLE_FONTS } from "@/lib/fonts/registry";
@@ -237,30 +238,33 @@ function ColorField({
   value: string;
   onChange: (v: string) => void;
 }) {
-  const isHex = value.startsWith("#");
+  const isTransparent = value === "transparent" || value === "";
+  const colorInputRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <div className="space-y-1.5">
       <Label className="text-xs text-muted-foreground">{label}</Label>
       <div className="flex items-center gap-2">
-        <div className="relative">
+        {/* Color swatch with native picker behind it */}
+        <div className="relative w-8 h-8 shrink-0">
           <input
+            ref={colorInputRef}
             type="color"
-            value={isHex ? value : "#000000"}
+            value={value.startsWith("#") ? value : "#000000"}
             onChange={(e) => onChange(e.target.value)}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           <div
-            className="w-8 h-8 rounded-md border border-border"
+            className="w-8 h-8 rounded-md border border-border pointer-events-none"
             style={{
-              backgroundColor: value === "transparent" ? "transparent" : value,
-              backgroundImage:
-                value === "transparent"
-                  ? "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)"
-                  : undefined,
-              backgroundSize: value === "transparent" ? "8px 8px" : undefined,
-              backgroundPosition:
-                value === "transparent" ? "0 0, 0 4px, 4px -4px, -4px 0px" : undefined,
+              backgroundColor: isTransparent ? undefined : value,
+              backgroundImage: isTransparent
+                ? "linear-gradient(45deg, #666 25%, transparent 25%), linear-gradient(-45deg, #666 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #666 75%), linear-gradient(-45deg, transparent 75%, #666 75%)"
+                : undefined,
+              backgroundSize: isTransparent ? "8px 8px" : undefined,
+              backgroundPosition: isTransparent
+                ? "0 0, 0 4px, 4px -4px, -4px 0px"
+                : undefined,
             }}
           />
         </div>
@@ -271,6 +275,17 @@ function ColorField({
           className="flex-1"
           placeholder="transparent, rgba(), or #hex"
         />
+        {/* Clear to transparent button */}
+        {!isTransparent && (
+          <button
+            type="button"
+            onClick={() => onChange("transparent")}
+            className="w-8 h-8 rounded-md border border-border shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            title="Clear to transparent"
+          >
+            ✕
+          </button>
+        )}
       </div>
     </div>
   );
