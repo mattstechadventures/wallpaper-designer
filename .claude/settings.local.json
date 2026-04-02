@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sw_vers)",
+      "Bash(system_profiler SPDisplaysDataType)",
+      "Bash(mkdir -p /Users/matthewday/dev/utilities/wallpaper/.claude/skills)",
+      "Bash(cp -r /Users/matthewday/dev/mms-v3/.claude/skills/dev-guardrails /Users/matthewday/dev/utilities/wallpaper/.claude/skills/)"
+    ]
+  }
+}
