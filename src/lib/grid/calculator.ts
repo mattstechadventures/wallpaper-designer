@@ -85,6 +85,27 @@ export function widgetsOverlap(
 }
 
 /**
+ * Convert pixel dimensions to the nearest grid span.
+ * Useful for snap-to-grid resize in the designer.
+ */
+export function snapToSpan(
+  pixelWidth: number,
+  pixelHeight: number,
+  metrics: GridMetrics,
+  grid: Grid,
+  minCols = 1,
+  minRows = 1,
+): GridSpan {
+  const cols = Math.round((pixelWidth + grid.gap) / (metrics.cellWidth + grid.gap));
+  const rows = Math.round((pixelHeight + grid.gap) / (metrics.cellHeight + grid.gap));
+
+  return {
+    cols: Math.max(minCols, cols),
+    rows: Math.max(minRows, rows),
+  };
+}
+
+/**
  * Check if a widget fits within the grid bounds.
  */
 export function widgetFitsGrid(
