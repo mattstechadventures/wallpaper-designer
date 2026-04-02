@@ -391,8 +391,20 @@ export function Canvas() {
       onPointerDown={handleCanvasPointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !drag && activeTool === "select") {
+          clearSelection();
+        }
+      }}
     >
-      <div className="min-w-full min-h-full flex items-center justify-center p-8">
+      <div
+        className="min-w-full min-h-full flex items-center justify-center p-8"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && !drag && activeTool === "select") {
+            clearSelection();
+          }
+        }}
+      >
         <div
           ref={containerRef}
           className="relative rounded-lg overflow-hidden shadow-2xl select-none font-sans shrink-0"
